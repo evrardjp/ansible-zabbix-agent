@@ -1,0 +1,88 @@
+---
+# Copyright 2015, Jean-Philippe Evrard <jean-philippe@evrard.me>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# Copyright 2015, Jean-Philippe Evrard <jean-philippe@evrard.me>
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Replacing the zabbix server ip
+  lineinfile:
+    dest: "{{ zabbix_agent_folder }}zabbix_agentd.conf"
+    regexp: "^Server="
+    line: "Server={{ zabbix_server_ip }}"
+  notify:
+    - restart zabbix-agent
+  tags:
+    - zabbix-agent-base-config
+    - zabbix-agent-config
+
+- name: Setting up agent's zabbix name
+  lineinfile:
+    dest: "{{ zabbix_agent_folder }}zabbix_agentd.conf"
+    regexp: "^Hostname="
+    line: "Hostname={{ zabbix_agent_hostname }}"
+  notify:
+    - restart zabbix-agent
+  tags:
+    - zabbix-agent-base-config
+    - zabbix-agent-config
+
+- name: Replacing the ListenIP
+  lineinfile:
+    dest: "{{ zabbix_agent_folder }}zabbix_agentd.conf"
+    regexp: "^ListenIP="
+    line: "ListenIP={{ zabbix_agent_listen_ip }}"
+  when: zabbix_agent_listen_ip is defined
+  notify:
+    - restart zabbix-agent
+  tags:
+    - zabbix-agent-base-config
+    - zabbix-agent-config
+
+- name: Replacing the server for active checks
+  lineinfile:
+    dest: "{{ zabbix_agent_folder }}zabbix_agentd.conf"
+    regexp: "^ServerActive="
+    line: "ServerActive={{ zabbix_server_serveractive_ip }}"
+  when: zabbix_server_serveractive_ip is defined
+  notify:
+    - restart zabbix-agent
+  tags:
+    - zabbix-agent-base-config
+    - zabbix-agent-config
+
+- name: Drop the additional configuration files
+  copy:
+    src: "{{ item.src_path }}"
+    dest: "{{ zabbix_agent_additional_configuration_folder }}{{ item.file }}"
+  with_items: zabbix_agent_additional_configuration_files
+  when: zabbix_agent_additional_configuration_files is defined
+  notify:
+    - restart zabbix-agent
+  tags:
+    - zabbix-agent-config
+    - zabbix-agent-additional-config
+
+- include: zabbix_agent_install_checks.yml
+  when: zabbix_agent_checks is defined
