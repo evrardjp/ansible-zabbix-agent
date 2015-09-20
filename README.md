@@ -44,7 +44,14 @@ Role Variables
     Defaults to "scripts/" in the zabbix-agent folder.
 
 *   zabbix_agent_listen_ip: The IP on which the zabbix-agent can be reached.
-*   zabbix_agent_checks. This is an optional variable (dict) that helps the user upload specific checks, depending on its inventory.
+
+    Not set if undefined.
+
+*   zabbix_agent_checks: This is an optional variable (dict) that helps the user upload specific checks, depending on its inventory.
+
+    A current limitation in Ansible 1 doesn't allow the pkg_requirements or the pip_requirements to be undefined. They currently must
+    be declared as empty with "[]" (see example below with pip_requirements). This will be fixed with ansible2
+
 *   zabbix_agent_additional_configuration_files: This is an optional variable that upload configuration files.
 
 Here is an example of zabbix_agent_checks:
@@ -63,9 +70,8 @@ Here is an example of zabbix_agent_checks:
         cron_month: (defaults to '*')
         cron_job: (This is useful if you want to pass arguments to the check script. Defaults to "{{script_dst}}")
         pkg_requirements:
-          - pkg1
           - whois
-        pip_requirements:
+        pip_requirements: []
 
 Here is an example of zabbix_agent_additional_configuration_files:
 

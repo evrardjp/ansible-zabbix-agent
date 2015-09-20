@@ -21,29 +21,30 @@
   tags:
     - zabbix-agent-check-scripts
 
-## Waiting for ansible2
-#- name: Install package requirements for the check scripts
-#  apt:
-#    name: "{{ item.1 }}"
-#    state: present
-#  with_subelements:
-#    - zabbix_agent_checks
-#    - requirements.pkg
+- name: Install package requirements for the check scripts
+  apt:
+    name: "{{ item.1 }}"
+    state: present
+  with_subelements:
+    - zabbix_agent_checks
+    - pkg_requirements
+#uncomment the following line  when ansible2 is released
 #    - skip_missing: True
-#  tags:
-#    - zabbix-agent-check-scripts
-#    - zabbix-agent-package-requirements
-#
-#- name: Install pip requirements for the check scripts
-#  pip:
-#    name: "{{ item.1 }}"
-#  with_subelements:
-#    - zabbix_agent_checks
-#    - requirements.pip
+  tags:
+    - zabbix-agent-check-scripts
+    - zabbix-agent-package-requirements
+
+- name: Install pip requirements for the check scripts
+  pip:
+    name: "{{ item.1 }}"
+  with_subelements:
+    - zabbix_agent_checks
+    - pip_requirements
+#uncomment the following line when ansible2 is released
 #    - skip_missing: True
-#  tags:
-#    - zabbix-agent-check-scripts
-#    - zabbix-agent-pip-requirements
+  tags:
+    - zabbix-agent-check-scripts
+    - zabbix-agent-pip-requirements
 
 - name: Creating the additional check scripts
   template:
