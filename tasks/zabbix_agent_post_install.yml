@@ -83,6 +83,3 @@
   tags:
     - zabbix-agent-config
     - zabbix-agent-additional-config
-
-- include: zabbix_agent_install_checks.yml
-  when: zabbix_agent_checks is defined

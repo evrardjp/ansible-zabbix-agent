@@ -13,33 +13,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Install package requirements for the check scripts
-  apt:
-    name: "{{ item.1 }}"
-    state: present
-  with_subelements:
-    - zabbix_agent_checks
-    - requirements.pkg
-    - { skip_missing: True }
+- name: Creating a scripts folder
+  file:
+    path: "{{ zabbix_agent_scripts_folder }}"
+    state: directory
+    mode: "0755"
   tags:
     - zabbix-agent-check-scripts
-    - zabbix-agent-package-requirements
 
-- name: Install pip requirements for the check scripts
-  pip:
-    name: "{{ item.1 }}"
-  with_subelements:
-    - zabbix_agent_checks
-    - requirements.pip
-    - { skip_missing: True }
-  tags:
-    - zabbix-agent-package-requirements
-  tags:
-    - zabbix-agent-check-scripts
-    - zabbix-agent-pip-requirements
+## Waiting for ansible2
+#- name: Install package requirements for the check scripts
+#  apt:
+#    name: "{{ item.1 }}"
+#    state: present
+#  with_subelements:
+#    - zabbix_agent_checks
+#    - requirements.pkg
+#    - skip_missing: True
+#  tags:
+#    - zabbix-agent-check-scripts
+#    - zabbix-agent-package-requirements
+#
+#- name: Install pip requirements for the check scripts
+#  pip:
+#    name: "{{ item.1 }}"
+#  with_subelements:
+#    - zabbix_agent_checks
+#    - requirements.pip
+#    - skip_missing: True
+#  tags:
+#    - zabbix-agent-check-scripts
+#    - zabbix-agent-pip-requirements
 
-- name: Drop the additional check scripts
-  copy:
+- name: Creating the additional check scripts
+  template:
     src: "{{ item.script_src }}"
     dest: "{{ item.script_dst }}"
     mode: "{{ item.script_mode | default('0750') }}"
@@ -50,15 +57,16 @@
 
 - name: Update the cronjob with the optional check scripts
   cron:
+    name: "{{ item.name }}"
     minute: "{{ item.cron_minute | default('*') }}"
     hour: "{{ item.cron_hour | default('*') }}"
     day: "{{ item.cron_day | default('*') }}"
     weekday: "{{ item.cron_weekday | default('*') }}"
     month: "{{ item.cron_month | default('*') }}"
-    job: "{{ item.cron_job | default(script_dst) }}"
+    job: "{{ item.cron_job | default(item.script_dst) }}"
     user: "{{ item.owner | default('zabbix') }}"
     state: present
-  with_dict: zabbix_agent_checks
+  with_items: zabbix_agent_checks
   when: item.use_cron | bool
   tags:
     - zabbix-agent-check-scripts
