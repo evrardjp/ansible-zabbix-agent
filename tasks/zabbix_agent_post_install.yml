@@ -73,7 +73,7 @@
     - zabbix-agent-config
 
 - name: Drop the additional configuration files
-  copy:
+  template:
     src: "{{ item.src_path }}"
     dest: "{{ zabbix_agent_additional_configuration_folder }}{{ item.file }}"
   with_items: zabbix_agent_additional_configuration_files
