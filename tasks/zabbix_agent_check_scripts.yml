@@ -53,6 +53,8 @@
     mode: "{{ item.script_mode | default('0750') }}"
     owner:  "{{ item.owner | default('zabbix') }}"
   with_items: zabbix_agent_checks
+  notify:
+    - restart zabbix-agent
   tags:
     - zabbix-agent-check-scripts
 
@@ -68,7 +70,9 @@
     user: "{{ item.owner | default('zabbix') }}"
     state: present
   with_items: zabbix_agent_checks
-  when: item.use_cron | bool
+  when: >
+    item.use_cron is defined and
+    item.use_cron | bool
   tags:
     - zabbix-agent-check-scripts
     - zabbix-agent-cronjobs
