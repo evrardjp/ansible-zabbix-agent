@@ -16,4 +16,4 @@
 - include: zabbix_agent_install.yml
 - include: zabbix_agent_post_install.yml
 - include: zabbix_agent_check_scripts.yml
-  when: zabbix_agent_checks is defined
+  when: zabbix_agent_checks | length > 0
