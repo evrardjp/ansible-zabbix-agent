@@ -77,7 +77,7 @@
     src: "{{ item.src_path }}"
     dest: "{{ zabbix_agent_additional_configuration_folder }}{{ item.file }}"
   with_items: zabbix_agent_additional_configuration_files
-  when: zabbix_agent_additional_configuration_files is defined
+  when: zabbix_agent_additional_configuration_files | default([])
   notify:
     - restart zabbix-agent
   tags:
