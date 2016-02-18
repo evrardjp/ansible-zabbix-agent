@@ -18,4 +18,5 @@ zabbix_agent_folder: "/etc/zabbix/"
 #zabbix_server_serveractive_ip:
 zabbix_agent_additional_configuration_folder: "{{zabbix_agent_folder}}zabbix_agentd.conf.d/"
 zabbix_agent_scripts_folder: "{{zabbix_agent_folder}}scripts/"
-zabbix_agent_checks: []
+zabbix_agent_copy_scripts: []
+zabbix_agent_template_scripts: []

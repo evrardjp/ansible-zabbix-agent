@@ -15,5 +15,7 @@
 
 - include: zabbix_agent_install.yml
 - include: zabbix_agent_post_install.yml
-- include: zabbix_agent_check_scripts.yml
-  when: zabbix_agent_checks | length > 0
+- include: zabbix_agent_copy_scripts.yml
+  when: zabbix_agent_copy_scripts | length > 0
+- include: zabbix_agent_template_scripts.yml
+  when: zabbix_agent_template_scripts | length > 0
