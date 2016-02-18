@@ -21,44 +21,44 @@
   tags:
     - zabbix-agent-check-scripts
 
-- name: Install package requirements for the check scripts
+- name: Install package requirements for the templated check scripts
   apt:
     name: "{{ item.1 }}"
     state: present
   with_subelements:
-    - zabbix_agent_checks
+    - zabbix_agent_template_scripts
     - pkg_requirements
 #uncomment the following line  when ansible2 is released
 #    - skip_missing: True
   tags:
-    - zabbix-agent-check-scripts
+    - zabbix-agent-template-scripts
     - zabbix-agent-package-requirements
 
-- name: Install pip requirements for the check scripts
+- name: Install pip requirements for the templated check scripts
   pip:
     name: "{{ item.1 }}"
   with_subelements:
-    - zabbix_agent_checks
+    - zabbix_agent_template_scripts
     - pip_requirements
 #uncomment the following line when ansible2 is released
 #    - skip_missing: True
   tags:
-    - zabbix-agent-check-scripts
+    - zabbix-agent-template-scripts
     - zabbix-agent-pip-requirements
 
-- name: Creating the additional check scripts
+- name: Templating the additional check scripts
   template:
     src: "{{ item.script_src }}"
     dest: "{{ item.script_dst }}"
     mode: "{{ item.script_mode | default('0750') }}"
     owner:  "{{ item.owner | default('zabbix') }}"
-  with_items: zabbix_agent_checks
+  with_items: zabbix_agent_template_scripts | default([])
   notify:
     - restart zabbix-agent
   tags:
-    - zabbix-agent-check-scripts
+    - zabbix-agent-template-scripts
 
-- name: Update the cronjob with the optional check scripts
+- name: Update the cronjob with the optional templated check scripts
   cron:
     name: "{{ item.name }}"
     minute: "{{ item.cron_minute | default('*') }}"
@@ -69,10 +69,10 @@
     job: "{{ item.cron_job | default(item.script_dst) }}"
     user: "{{ item.owner | default('zabbix') }}"
     state: present
-  with_items: zabbix_agent_checks
-  when: >
-    item.use_cron is defined and
-    item.use_cron | bool
+  with_items: zabbix_agent_template_scripts | default([])
+  when:
+    - item.use_cron is defined
+    - item.use_cron | bool
   tags:
-    - zabbix-agent-check-scripts
+    - zabbix-agent-template-scripts
     - zabbix-agent-cronjobs

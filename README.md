@@ -47,16 +47,15 @@ Role Variables
 
     Not set if undefined.
 
-*   zabbix_agent_checks: This is an optional variable (dict) that helps the user upload specific checks, depending on its inventory.
+*   zabbix_agent_copy_scripts: This is an optional variable (dict) that helps the user upload specific checks with the copy module. A current limitation in Ansible 1 doesn't allow the pkg_requirements or the pip_requirements to be undefined. They currently must be declared as empty with "{}" (see example below with pip_requirements). This will be fixed with ansible2
 
-    A current limitation in Ansible 1 doesn't allow the pkg_requirements or the pip_requirements to be undefined. They currently must
-    be declared as empty with "[]" (see example below with pip_requirements). This will be fixed with ansible2
+*   zbbix_agent_templated_scripts: This is an optional variable (dict) that helps the user upload specific checks with the template module. A current limitation in Ansible 1 doesn't allow the pkg_requirements or the pip_requirements to be undefined. They currently must be declared as empty with "{}" (see example below with pip_requirements). This will be fixed with ansible2
 
 *   zabbix_agent_additional_configuration_files: This is an optional variable that upload configuration files.
 
-Here is an example of zabbix_agent_checks:
+Here is an example of zabbix_agent_copy_scripts:
 
-    zabbix_agent_checks:
+    zabbix_agent_copy_scripts:
       - name: check1
         script_src: PATH TO THE SCRIPT ON YOUR DEPLOY NODE. No defaults. Mandatory.
         script_dst: PATH TO THE SCRIPT ON YOUR DEPLOYED NODE (probably in "{{zabbix_agent_folder}}/scripts"). No defaults. Mandatory.
